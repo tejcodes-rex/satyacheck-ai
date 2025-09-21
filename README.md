@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python)](https://python.org)
 [![Cloud Functions](https://img.shields.io/badge/Google%20Cloud-Functions-4285F4?style=for-the-badge&logo=googlecloud)](https://cloud.google.com/functions)
 
-> **🏆 Submission for Google Gen AI Exchange Hackathon 2024**
+> **🏆 Submission for Google Gen AI Exchange Hackathon 2025**
 > *Combating misinformation in India with AI-powered, culturally-aware fact-checking*
 
 ---
@@ -64,9 +64,9 @@ SatyaCheck AI addresses these challenges with:
 
 ## 🎥 Demo Video
 
-[![SatyaCheck AI Demo](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://youtu.be/YOUR_VIDEO_ID)
+[![SatyaCheck AI Demo](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://youtu.be/VIDEO_ID)
 
-**📺 [Watch Full Demo](https://youtu.be/YOUR_VIDEO_ID)** - See SatyaCheck AI in action across all input modes!
+**📺 [Watch Full Demo](https://youtu.be/VIDEO_ID)** - See SatyaCheck AI in action across all input modes!
 
 ---
 
@@ -100,7 +100,7 @@ graph TB
 
 ### 1️⃣ **Clone & Setup**
 ```bash
-git clone https://github.com/YOUR_USERNAME/satyacheck-ai.git
+git clone https://github.com/tejcodes-rex/satyacheck-ai.git
 cd satyacheck-ai
 
 # Install dependencies
@@ -419,7 +419,7 @@ git push origin main
 
 #### Text (English)
 ```
-"WhatsApp will start charging ₹25 per message from January 2024"
+"WhatsApp will start charging ₹25 per message from January 2025"
 ```
 **Expected**: False (Common recurring fake claim)
 
@@ -464,18 +464,18 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ### 🤖 **AI Attribution**
 - Powered by **Google Gemini 1.5 Flash**
 - Uses **Google Cloud AI Services**
-- Built for **Google Gen AI Exchange Hackathon 2024**
+- Built for **Google Gen AI Exchange Hackathon 2025**
 
 ---
 
-## 👥 Team
+## 👥 Team - Veyra
 
 ### 🧑‍💻 **Lead Developer**
-**[Your Name]** - *Full Stack AI Developer*
-- 🌐 [Portfolio](https://yourwebsite.com)
-- 🐙 [GitHub](https://github.com/yourusername)
-- 💼 [LinkedIn](https://linkedin.com/in/yourprofile)
-- 📧 [Email](mailto:your.email@example.com)
+**[Tejas Mane]** - *Full Stack AI Developer*
+- 🌐 [Portfolio](https://tej-rex.com)
+- 🐙 [GitHub](https://github.com/tejcodes-rex)
+- 💼 [LinkedIn](https://www.linkedin.com/in/tejas-mane-463581267/)
+- 📧 [Email](mailto:tejas25551@example.com)
 
 ---
 
@@ -492,16 +492,14 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ## 📞 Support & Contact
 
 ### 🆘 **Need Help?**
-- 📖 **Documentation**: Check our comprehensive [Wiki](https://github.com/yourusername/satyacheck-ai/wiki)
-- 🐛 **Bug Reports**: [Create an Issue](https://github.com/yourusername/satyacheck-ai/issues)
-- 💡 **Feature Requests**: [Discussion Forum](https://github.com/yourusername/satyacheck-ai/discussions)
-- 📧 **Direct Contact**: your.email@example.com
+- 📖 **Documentation**: Check our comprehensive [Wiki](https://github.com/tejcodes-rex/satyacheck-ai/wiki)
+- 🐛 **Bug Reports**: [Create an Issue](https://github.com/tejcodes-rex/satyacheck-ai/issues)
+- 💡 **Feature Requests**: [Discussion Forum](https://github.com/tejcodes-rex/satyacheck-ai/discussions)
+- 📧 **Direct Contact**: tejas25551@gmail.com
 
 ### 🔗 **Important Links**
 - 🌐 **Live Demo**: [https://satyacheck.ai](https://satyacheck.ai)
-- 📺 **Demo Video**: [YouTube Link](https://youtu.be/YOUR_VIDEO_ID)
-- 📊 **Hackathon Submission**: [Google Gen AI Exchange](https://ai.google.dev/competition)
-- 📚 **Documentation**: [Full API Docs](https://docs.satyacheck.ai)
+- 📺 **Demo Video**: [YouTube Link](https://youtu.be/VIDEO_ID)
 
 ---
 
@@ -511,10 +509,10 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 [![Deploy to Google Cloud](https://img.shields.io/badge/Deploy%20to-Google%20Cloud-4285F4?style=for-the-badge&logo=googlecloud)](https://console.cloud.google.com/functions/deploy)
 [![Try Live Demo](https://img.shields.io/badge/Try%20Live-Demo-FF6B6B?style=for-the-badge&logo=google)](https://satyacheck.ai)
-[![Watch Demo Video](https://img.shields.io/badge/Watch-Demo%20Video-FF0000?style=for-the-badge&logo=youtube)](https://youtu.be/YOUR_VIDEO_ID)
+[![Watch Demo Video](https://img.shields.io/badge/Watch-Demo%20Video-FF0000?style=for-the-badge&logo=youtube)](https://youtu.be/VIDEO_ID)
 
 **Built with ❤️ for India's fight against misinformation**
 
-*Submitted to Google Gen AI Exchange Hackathon 2024*
+*Submitted to Google Gen AI Exchange Hackathon 2025*
 
 </div>
