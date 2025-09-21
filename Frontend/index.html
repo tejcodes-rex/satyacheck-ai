@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SatyaCheck AI - Advanced Fact Checking for India</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <meta name="description" content="AI-powered fact checking for Indian content. Analyze text, images, audio, and URLs in multiple Indian languages.">
+    <meta name="keywords" content="fact check, AI, India, misinformation, Hindi, Tamil, Telugu, Bengali">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇮🇳</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --india-gradient: linear-gradient(135deg, #ff9933 0%, #ffffff 33%, #ffffff 66%, #138808 100%);
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-bg: #f8f9fa;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --border-radius: 15px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out;
+            position: relative;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: var(--india-gradient);
+            color: #333;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.1) 75%);
+            background-size: 20px 20px;
+            animation: patternMove 20s linear infinite;
+        }
+
+        @keyframes patternMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 20px 20px; }
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+            font-weight: 500;
+        }
+
+        /* FIXED: Stable main content layout that doesn't shift */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+            min-height: 600px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            body {
+                padding: 10px;
+            }
+        }
+
+        .input-panel {
+            background: var(--light-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            border: 2px solid #e1e5e9;
+            height: fit-content;
+        }
+
+        .results-panel {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            border: 2px solid #e1e5e9;
+            min-height: 400px;
+            height: fit-content;
+        }
+
+        .input-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 5px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .claim-input {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .file-upload {
+            position: relative;
+            display: block;
+            width: 100%;
+            padding: 20px;
+            border: 2px dashed #e1e5e9;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .file-upload:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .file-upload.has-file {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.05);
+        }
+
+        .file-upload input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-remove {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .audio-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .record-btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .record-btn.recording {
+            background: var(--danger-color);
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        .record-btn:not(.recording) {
+            background: var(--success-color);
+            color: white;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .analyze-btn {
+            width: 100%;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analyze-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .analyze-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-content {
+            display: none;
+        }
+
+        .results-content.show {
+            display: block;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .verdict-card {
+            background: var(--light-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .verdict-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .verdict-icon {
+            font-size: 2rem;
+        }
+
+        .verdict-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .verdict-true { color: var(--success-color); }
+        .verdict-false { color: var(--danger-color); }
+        .verdict-partially { color: var(--warning-color); }
+        .verdict-partiallytrue { color: var(--warning-color); }
+        .verdict-unverified { color: var(--info-color); }
+
+        .confidence-bar {
+            background: #e1e5e9;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            transition: width 1s ease-out;
+            border-radius: 4px;
+        }
+
+        .explanation-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            border: 1px solid #e1e5e9;
+        }
+
+        .kid-explanation {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            border-left: 4px solid #2196f3;
+            margin-bottom: 20px;
+        }
+
+        /* FIXED: Non-disruptive notification system */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            pointer-events: none;
+            max-width: 400px;
+        }
+
+        .notification {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            border-left: 4px solid;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            pointer-events: auto;
+            transform: translateX(420px);
+            animation: slideInRight 0.3s ease-out forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(420px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(420px); opacity: 0; }
+        }
+
+        .notification.hiding {
+            animation: slideOutRight 0.3s ease-out forwards;
+        }
+
+        .notification-success {
+            border-left-color: var(--success-color);
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        }
+
+        .notification-danger {
+            border-left-color: var(--danger-color);
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        }
+
+        .notification-warning {
+            border-left-color: var(--warning-color);
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        }
+
+        .notification-info {
+            border-left-color: var(--info-color);
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        }
+
+        .notification-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            opacity: 0.6;
+            padding: 0;
+            margin-left: 8px;
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-close:hover {
+            opacity: 1;
+        }
+
+        .audio-visualizer {
+            width: 100%;
+            height: 60px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 10px 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 10px;
+        }
+
+        .audio-bar {
+            width: 4px;
+            background: #667eea;
+            border-radius: 2px;
+            animation: audioWave 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes audioWave {
+            0% { height: 10px; }
+            100% { height: 40px; }
+        }
+
+        .real-time-info {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .demo-section {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            border-left: 5px solid var(--warning-color);
+        }
+
+        .demo-claims {
+            display: grid;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .demo-claim {
+            background: white;
+            border: 1px solid var(--warning-color);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+        }
+
+        .demo-claim:hover {
+            background: var(--warning-color);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        /* FIXED: Better button styles */
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary:disabled {
+            background: #adb5bd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* FIXED: Responsive improvements */
+        @media (max-width: 480px) {
+            .audio-controls {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .record-btn, .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .notification-container {
+                left: 10px;
+                right: 10px;
+                max-width: none;
+            }
+            
+            .notification {
+                margin-bottom: 8px;
+            }
+        }
+
+        /* FIXED: Ensure proper spacing */
+        .content-section {
+            margin-bottom: 20px;
+        }
+
+        /* FIXED: Icon colors for notifications */
+        .notification-success .notification-icon { color: var(--success-color); }
+        .notification-danger .notification-icon { color: var(--danger-color); }
+        .notification-warning .notification-icon { color: #856404; }
+        .notification-info .notification-icon { color: var(--info-color); }
+    </style>
+</head>
+<body>
+    <!-- FIXED: Non-disruptive notification container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h3 id="loadingTitle">Analyzing with AI...</h3>
+            <p id="loadingText">Processing your content...</p>
+            <div style="margin-top: 20px;">
+                <div style="background: #f0f0f0; height: 4px; border-radius: 2px; overflow: hidden;">
+                    <div id="progressBar" style="width: 0%; height: 100%; background: #667eea; transition: width 0.3s ease;"></div>
+                </div>
+                <small id="progressText">Initializing...</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🇮🇳 SatyaCheck AI</h1>
+            <p id="headerSubtitle">Advanced AI-Powered Fact Checking for India</p>
+        </div>
+
+        <!-- Real-time Info Alert -->
+        <div class="content-section" style="padding: 20px 30px 0;">
+            <div class="real-time-info">
+                <h4><i class="fas fa-clock"></i> <span id="realTimeTitle">Enhanced Real-Time Analysis</span></h4>
+                <p id="realTimeDescription">For current events and breaking news claims, our AI now searches the latest information from trusted sources and provides up-to-date analysis.</p>
+            </div>
+        </div>
+
+        <!-- Demo Section -->
+        <div class="content-section" style="padding: 0 30px 30px;">
+            <div class="demo-section">
+                <h3><i class="fas fa-rocket"></i> <span id="demoTitle">Try these sample claims:</span></h3>
+                <div class="demo-claims">
+                    <div class="demo-claim" onclick="fillClaim(this)" data-lang="hi">
+                        गाय का मूत्र पीने से कोरोना वायरस ठीक हो जाता है
+                    </div>
+                    <div class="demo-claim" onclick="fillClaim(this)" data-lang="en">
+                        India won the Asia Cup cricket tournament in September 2025
+                    </div>
+                    <div class="demo-claim" onclick="fillClaim(this)" data-lang="en">
+                        PM announces ₹5000 monthly scheme for all Indian families
+                    </div>
+                    <div class="demo-claim" onclick="fillClaim(this)" data-lang="hi">
+                        WhatsApp पर मिला मैसेज कि कल से सभी ATM बंद हो जाएंगे
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Input Panel -->
+            <div class="input-panel">
+                <h3><i class="fas fa-search"></i> <span id="factCheckTitle">Fact-Check Your Content</span></h3>
+                
+                <!-- Input Type Tabs -->
+                <div class="input-tabs">
+                    <button class="tab-btn active" onclick="switchTab('text')">
+                        <i class="fas fa-font"></i> <span id="textTabLabel">Text</span>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('image')">
+                        <i class="fas fa-image"></i> <span id="imageTabLabel">Image</span>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('audio')">
+                        <i class="fas fa-microphone"></i> <span id="audioTabLabel">Audio</span>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('url')">
+                        <i class="fas fa-link"></i> <span id="urlTabLabel">URL</span>
+                    </button>
+                </div>
+
+                <!-- Text Input Tab -->
+                <div id="textTab" class="tab-content active">
+                    <div class="form-group">
+                        <label for="claimText"><i class="fas fa-edit"></i> <span id="claimLabel">Enter claim to fact-check:</span></label>
+                        <textarea 
+                            id="claimText" 
+                            class="form-control claim-input" 
+                            placeholder="Enter any claim, news, or information you want to verify..."
+                        ></textarea>
+                    </div>
+                </div>
+
+                <!-- Image Input Tab -->
+                <div id="imageTab" class="tab-content">
+                    <div class="form-group">
+                        <label><i class="fas fa-images"></i> <span id="imageLabel">Upload Image with Text:</span></label>
+                        <div class="file-upload" id="imageUpload">
+                            <input type="file" id="imageFile" accept="image/*" onchange="handleFileUpload(this, 'image')">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #667eea; margin-bottom: 10px;"></i>
+                            <p id="imageUploadText">Click to upload or drag and drop</p>
+                            <small id="imageSupportText">Supports: JPG, PNG, WebP (Max 50MB)</small>
+                        </div>
+                        <div id="imagePreview" style="margin-top: 15px; text-align: center;"></div>
+                    </div>
+                </div>
+
+                <!-- Audio Input Tab -->
+                <div id="audioTab" class="tab-content">
+                    <div class="form-group">
+                        <label><i class="fas fa-headphones"></i> <span id="audioInputLabel">Audio Input:</span></label>
+                        
+                        <!-- Live Recording -->
+                        <div style="margin-bottom: 20px;">
+                            <h4 id="liveRecordingTitle">🎙️ Live Recording:</h4>
+                            <div class="audio-controls">
+                                <button id="recordBtn" class="record-btn" onclick="toggleRecording()">
+                                    <i class="fas fa-microphone"></i> <span id="recordBtnText">Start Recording</span>
+                                </button>
+                                <button id="playBtn" class="btn-secondary" onclick="playRecording()" disabled>
+                                    <i class="fas fa-play"></i> <span id="playBtnText">Play</span>
+                                </button>
+                                <button id="clearRecordingBtn" class="btn-secondary" onclick="clearRecording()" disabled>
+                                    <i class="fas fa-trash"></i> <span id="clearBtnText">Clear</span>
+                                </button>
+                                <button onclick="clearAllAudio()" class="btn-secondary">
+                                    <i class="fas fa-broom"></i> <span id="clearAllBtnText">Clear All</span>
+                                </button>
+                            </div>
+                            <div class="audio-visualizer" id="audioVisualizer">
+                                <div class="audio-bar" style="animation-delay: 0s;"></div>
+                                <div class="audio-bar" style="animation-delay: 0.1s;"></div>
+                                <div class="audio-bar" style="animation-delay: 0.2s;"></div>
+                                <div class="audio-bar" style="animation-delay: 0.3s;"></div>
+                                <div class="audio-bar" style="animation-delay: 0.4s;"></div>
+                                <div class="audio-bar" style="animation-delay: 0.5s;"></div>
+                                <div class="audio-bar" style="animation-delay: 0.6s;"></div>
+                                <div class="audio-bar" style="animation-delay: 0.7s;"></div>
+                            </div>
+                            <audio id="audioPlayer" controls style="width: 100%; margin-top: 10px; display: none;"></audio>
+                        </div>
+
+                        <!-- File Upload -->
+                        <div>
+                            <h4 id="audioFileTitle">📁 Upload Audio File:</h4>
+                            <div class="file-upload" id="audioUpload">
+                                <input type="file" id="audioFile" accept="audio/*" onchange="handleFileUpload(this, 'audio')">
+                                <i class="fas fa-file-audio" style="font-size: 2rem; color: #667eea; margin-bottom: 10px;"></i>
+                                <p id="audioUploadText">Click to upload audio file</p>
+                                <small id="audioSupportText">Supports: MP3, WAV, M4A, OGG (Max 50MB)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- URL Input Tab -->
+                <div id="urlTab" class="tab-content">
+                    <div class="form-group">
+                        <label for="urlInput"><i class="fas fa-globe"></i> <span id="urlLabel">Enter URL to analyze:</span></label>
+                        <input 
+                            type="url" 
+                            id="urlInput" 
+                            class="form-control" 
+                            placeholder="https://example.com/article"
+                        >
+                        <small id="urlHelpText">Paste any news article, social media post, or webpage URL</small>
+                    </div>
+                </div>
+
+                <!-- Language Selection -->
+                <div class="form-group">
+                    <label for="language"><i class="fas fa-language"></i> <span id="languageLabel">Select Language:</span></label>
+                    <select id="language" class="form-control" onchange="changeLanguage(this.value)">
+                        <option value="hi">🇮🇳 Hindi (हिंदी)</option>
+                        <option value="en" selected>🇬🇧 English</option>
+                        <option value="ta">🇮🇳 Tamil (தமிழ்)</option>
+                        <option value="te">🇮🇳 Telugu (తెలుగు)</option>
+                        <option value="bn">🇮🇳 Bengali (বাংলা)</option>
+                        <option value="mr">🇮🇳 Marathi (मराठी)</option>
+                        <option value="gu">🇮🇳 Gujarati (ગુજરાતી)</option>
+                    </select>
+                </div>
+
+                <!-- Options -->
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="includeAudio" style="margin-right: 8px;">
+                        <i class="fas fa-volume-up"></i> <span id="audioOptionLabel">Generate audio explanation</span>
+                    </label>
+                </div>
+
+                <!-- Analyze Button -->
+                <button onclick="analyzeClaim()" class="analyze-btn" id="analyzeBtn">
+                    <i class="fas fa-search"></i> <span id="analyzeBtnText">Analyze Content</span>
+                </button>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="results-panel">
+                <h3><i class="fas fa-chart-line"></i> <span id="resultsTitle">Analysis Results</span></h3>
+                
+                <div id="emptyState" style="text-align: center; color: #666; margin-top: 50px;">
+                    <i class="fas fa-clipboard-check" style="font-size: 4rem; margin-bottom: 20px; color: #ddd;"></i>
+                    <p id="emptyStateText">Enter content above to start fact-checking</p>
+                </div>
+
+                <div class="results-content" id="resultsContent">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced language translations
+        const TRANSLATIONS = {
+            en: {
+                headerSubtitle: "Advanced AI-Powered Fact Checking for India",
+                realTimeTitle: "Enhanced Real-Time Analysis",
+                realTimeDescription: "For current events and breaking news claims, our AI now searches the latest information from trusted sources and provides up-to-date analysis.",
+                demoTitle: "Try these sample claims:",
+                factCheckTitle: "Fact-Check Your Content",
+                textTabLabel: "Text",
+                imageTabLabel: "Image", 
+                audioTabLabel: "Audio",
+                urlTabLabel: "URL",
+                claimLabel: "Enter claim to fact-check:",
+                imageLabel: "Upload Image with Text:",
+                audioInputLabel: "Audio Input:",
+                liveRecordingTitle: "🎙️ Live Recording:",
+                audioFileTitle: "📁 Upload Audio File:",
+                urlLabel: "Enter URL to analyze:",
+                languageLabel: "Select Language:",
+                audioOptionLabel: "Generate audio explanation",
+                analyzeBtnText: "Analyze Content",
+                resultsTitle: "Analysis Results",
+                emptyStateText: "Enter content above to start fact-checking",
+                recordBtnText: "Start Recording",
+                playBtnText: "Play",
+                clearBtnText: "Clear",
+                imageUploadText: "Click to upload or drag and drop",
+                imageSupportText: "Supports: JPG, PNG, WebP (Max 50MB)",
+                audioUploadText: "Click to upload audio file",
+                audioSupportText: "Supports: MP3, WAV, M4A, OGG (Max 50MB)",
+                clearAllBtnText: "Clear All",
+                urlHelpText: "Paste any news article, social media post, or webpage URL"
+            },
+            hi: {
+                headerSubtitle: "भारत के लिए उन्नत AI-संचालित तथ्य जांच",
+                realTimeTitle: "वर्धित वास्तविक समय विश्लेषण",
+                realTimeDescription: "वर्तमान घटनाओं और ब्रेकिंग न्यूज दावों के लिए, हमारा AI अब विश्वसनीय स्रोतों से नवीनतम जानकारी खोजता है और अद्यतन विश्लेषण प्रदान करता है।",
+                demoTitle: "इन नमूना दावों को आज़माएं:",
+                factCheckTitle: "अपनी सामग्री की तथ्य जांच करें",
+                textTabLabel: "टेक्स्ट",
+                imageTabLabel: "छवि",
+                audioTabLabel: "ऑडियो",
+                urlTabLabel: "URL",
+                claimLabel: "तथ्य जांच के लिए दावा दर्ज करें:",
+                imageLabel: "टेक्स्ट के साथ छवि अपलोड करें:",
+                audioInputLabel: "ऑडियो इनपुट:",
+                liveRecordingTitle: "🎙️ लाइव रिकॉर्डिंग:",
+                audioFileTitle: "📁 ऑडियो फ़ाइल अपलोड करें:",
+                urlLabel: "विश्लेषण के लिए URL दर्ज करें:",
+                languageLabel: "भाषा चुनें:",
+                audioOptionLabel: "ऑडियो स्पष्टीकरण उत्पन्न करें",
+                analyzeBtnText: "सामग्री का विश्लेषण करें",
+                resultsTitle: "विश्लेषण परिणाम",
+                emptyStateText: "तथ्य जांच शुरू करने के लिए ऊपर सामग्री दर्ज करें",
+                recordBtnText: "रिकॉर्डिंग शुरू करें",
+                playBtnText: "चलाएं",
+                clearBtnText: "साफ़ करें",
+                imageUploadText: "अपलोड करने या ड्रैग एंड ड्रॉप करने के लिए क्लिक करें",
+                imageSupportText: "समर्थित: JPG, PNG, WebP (अधिकतम 50MB)",
+                audioUploadText: "ऑडियो फ़ाइल अपलोड करने के लिए क्लिक करें",
+                audioSupportText: "समर्थित: MP3, WAV, M4A, OGG (अधिकतम 50MB)",
+                clearAllBtnText: "सभी साफ़ करें",
+                urlHelpText: "कोई भी समाचार लेख, सोशल मीडिया पोस्ट या वेबपेज URL पेस्ट करें"
+            }
+        };
+
+        // Enhanced Configuration with environment detection
+        const CONFIG = {
+            API_BASE_URL: (function() {
+                // Detect environment and set appropriate API URL
+                if (window.location.protocol === 'file:') {
+                    return 'https://your.a.run.app';
+                } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    return `${window.location.protocol}//${window.location.hostname}:8080`;
+                } else {
+                    return 'https://your.a.run.app';
+                }
+            })(),
+            HEALTH_CHECK_URL: (function() {
+                // Detect environment and set appropriate health check URL
+                if (window.location.protocol === 'file:') {
+                    return 'https://your.a.run.app';
+                } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    return `${window.location.protocol}//${window.location.hostname}:8081`;
+                } else {
+                    return 'https://your.a.run.app';
+                }
+            })(),
+            MAX_FILE_SIZE: 50 * 1024 * 1024,
+            SUPPORTED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/webp'],
+            SUPPORTED_AUDIO_TYPES: ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/webm'],
+            IS_PREVIEW_MODE: false,
+            REQUEST_TIMEOUT: 30000, // 30 seconds
+            RETRY_ATTEMPTS: 2
+        };
+
+        // Global variables
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let isRecording = false;
+        let audioBlob = null;
+        let currentLanguage = 'en';
+
+        // Language switching
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            updateUILanguage();
+        }
+
+        function updateUILanguage() {
+            const translations = TRANSLATIONS[currentLanguage] || TRANSLATIONS.en;
+            
+            // Update all translatable elements
+            Object.keys(translations).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = translations[key];
+                }
+            });
+
+            // Update placeholders
+            const claimText = document.getElementById('claimText');
+            if (claimText) {
+                claimText.placeholder = currentLanguage === 'hi' ? 
+                    'कोई भी दावा, समाचार, या जानकारी दर्ज करें जिसे आप सत्यापित करना चाहते हैं...' :
+                    'Enter any claim, news, or information you want to verify...';
+            }
+
+            const urlInput = document.getElementById('urlInput');
+            if (urlInput) {
+                urlInput.placeholder = currentLanguage === 'hi' ? 
+                    'https://example.com/लेख' : 'https://example.com/article';
+            }
+        }
+
+        // FIXED: Enhanced notification system that doesn't disrupt layout
+        function showNotification(message, type = 'info', duration = 5000) {
+            const container = document.getElementById('notificationContainer');
+            
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            
+            const icons = {
+                success: 'fas fa-check-circle',
+                danger: 'fas fa-exclamation-triangle',
+                warning: 'fas fa-exclamation-circle',
+                info: 'fas fa-info-circle'
+            };
+            
+            notification.innerHTML = `
+                <i class="notification-icon ${icons[type] || icons.info}"></i>
+                <div class="notification-content">${message}</div>
+                <button class="notification-close" onclick="closeNotification(this)">&times;</button>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Auto-remove after duration
+            setTimeout(() => {
+                closeNotification(notification.querySelector('.notification-close'));
+            }, duration);
+        }
+
+        function closeNotification(closeBtn) {
+            const notification = closeBtn.parentElement;
+            notification.classList.add('hiding');
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }
+
+        // Enhanced file upload handler with removal functionality
+        function handleFileUpload(input, type) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            // Validate file size
+            if (file.size > CONFIG.MAX_FILE_SIZE) {
+                showNotification(currentLanguage === 'hi' ? 
+                    'फ़ाइल बहुत बड़ी है। अधिकतम आकार 50MB है।' :
+                    'File too large. Maximum size is 50MB.', 'danger');
+                input.value = '';
+                return;
+            }
+            
+            // Validate file type
+            if (type === 'image' && !CONFIG.SUPPORTED_IMAGE_TYPES.includes(file.type)) {
+                showNotification(currentLanguage === 'hi' ? 
+                    'असमर्थित छवि प्रारूप। कृपया JPG, PNG, या WebP का उपयोग करें।' :
+                    'Unsupported image format. Please use JPG, PNG, or WebP.', 'danger');
+                input.value = '';
+                return;
+            }
+            
+            if (type === 'audio' && !CONFIG.SUPPORTED_AUDIO_TYPES.includes(file.type)) {
+                showNotification(currentLanguage === 'hi' ? 
+                    'असमर्थित ऑडियो प्रारूप। कृपया MP3, WAV, OGG, या M4A का उपयोग करें।' :
+                    'Unsupported audio format. Please use MP3, WAV, OGG, or M4A.', 'danger');
+                input.value = '';
+                return;
+            }
+            
+            // Show preview and remove button for images
+            if (type === 'image') {
+                const uploadDiv = document.getElementById('imageUpload');
+                uploadDiv.classList.add('has-file');
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').innerHTML = `
+                        <div style="position: relative; display: inline-block;">
+                            <img src="${e.target.result}" style="max-width: 100%; max-height: 200px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                            <button class="file-remove" onclick="removeFile('image')" title="${currentLanguage === 'hi' ? 'फ़ाइल हटाएं' : 'Remove file'}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <p style="margin-top: 10px; color: #666;">${currentLanguage === 'hi' ? 'फ़ाइल' : 'File'}: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</p>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            // Show file info and remove button for audio
+            if (type === 'audio') {
+                const uploadDiv = document.getElementById('audioUpload');
+                uploadDiv.classList.add('has-file');
+                uploadDiv.innerHTML = `
+                    <button class="file-remove" onclick="removeFile('audio')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <i class="fas fa-file-audio" style="font-size: 2rem; color: #28a745; margin-bottom: 10px;"></i>
+                    <p style="color: #28a745; font-weight: 600;">${currentLanguage === 'hi' ? 'ऑडियो अपलोड हो गया' : 'Audio Uploaded'}</p>
+                    <small>${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</small>
+                `;
+                
+                showNotification(currentLanguage === 'hi' ? 
+                    `ऑडियो फ़ाइल अपलोड: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)` :
+                    `Audio file uploaded: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`, 'success');
+            }
+        }
+
+        // Remove uploaded files
+        function removeFile(type) {
+            if (type === 'image') {
+                // Clear file input
+                const imageInput = document.getElementById('imageFile');
+                imageInput.value = '';
+                
+                // Clear preview
+                document.getElementById('imagePreview').innerHTML = '';
+                
+                // Reset upload area
+                const uploadDiv = document.getElementById('imageUpload');
+                uploadDiv.classList.remove('has-file');
+                uploadDiv.innerHTML = `
+                    <input type="file" id="imageFile" accept="image/*" onchange="handleFileUpload(this, 'image')">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #667eea; margin-bottom: 10px;"></i>
+                    <p id="imageUploadText">${TRANSLATIONS[currentLanguage].imageUploadText}</p>
+                    <small id="imageSupportText">${TRANSLATIONS[currentLanguage].imageSupportText}</small>
+                `;
+                
+                showNotification(currentLanguage === 'hi' ? 
+                    'छवि फ़ाइल हटा दी गई' : 'Image file removed', 'info');
+                    
+            } else if (type === 'audio') {
+                // Clear file input
+                const audioInput = document.getElementById('audioFile');
+                audioInput.value = '';
+                
+                // Reset upload area
+                const uploadDiv = document.getElementById('audioUpload');
+                uploadDiv.classList.remove('has-file');
+                uploadDiv.innerHTML = `
+                    <input type="file" id="audioFile" accept="audio/*" onchange="handleFileUpload(this, 'audio')">
+                    <i class="fas fa-file-audio" style="font-size: 2rem; color: #667eea; margin-bottom: 10px;"></i>
+                    <p id="audioUploadText">${TRANSLATIONS[currentLanguage].audioUploadText}</p>
+                    <small id="audioSupportText">${TRANSLATIONS[currentLanguage].audioSupportText}</small>
+                `;
+                
+                showNotification(currentLanguage === 'hi' ? 
+                    'ऑडियो फ़ाइल हटा दी गई' : 'Audio file removed', 'info');
+            }
+        }
+        
+        // Enhanced audio recording with better error handling
+        async function toggleRecording() {
+            if (!isRecording) {
+                await startRecording();
+            } else {
+                stopRecording();
+            }
+        }
+
+        async function startRecording() {
+            if (CONFIG.IS_PREVIEW_MODE) {
+                showNotification(currentLanguage === 'hi' ? 
+                    '🎤 ऑडियो रिकॉर्डिंग पूर्वावलोकन मोड में उपलब्ध नहीं है। माइक्रोफ़ोन एक्सेस सक्षम करने के लिए कृपया इस ऐप को डाउनलोड और तैनात करें।' :
+                    '🎤 Audio recording is not available in preview mode. Please download and deploy this app to enable microphone access.', 'warning');
+                return;
+            }
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        sampleRate: 16000,
+                        channelCount: 1,
+                        echoCancellation: true,
+                        noiseSuppression: true
+                    } 
+                });
+                
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'audio/webm;codecs=opus'
+                });
+                
+                recordedChunks = [];
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = () => {
+                    audioBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audioPlayer = document.getElementById('audioPlayer');
+                    audioPlayer.src = audioUrl;
+                    audioPlayer.style.display = 'block';
+                    document.getElementById('playBtn').disabled = false;
+                    document.getElementById('clearRecordingBtn').disabled = false;
+                };
+                
+                mediaRecorder.start();
+                isRecording = true;
+                
+                // Update UI
+                const recordBtn = document.getElementById('recordBtn');
+                recordBtn.innerHTML = `<i class="fas fa-stop"></i> <span>${currentLanguage === 'hi' ? 'रिकॉर्डिंग बंद करें' : 'Stop Recording'}</span>`;
+                recordBtn.classList.add('recording');
+                
+                // Show visualizer
+                document.getElementById('audioVisualizer').style.display = 'flex';
+                
+                showNotification(currentLanguage === 'hi' ? 
+                    'रिकॉर्डिंग शुरू। अपने माइक्रोफ़ोन में स्पष्ट रूप से बोलें।' :
+                    'Recording started. Speak clearly into your microphone.', 'success');
+                
+            } catch (error) {
+                console.error('Error starting recording:', error);
+                if (error.name === 'NotAllowedError') {
+                    showNotification(currentLanguage === 'hi' ? 
+                        '🎤 माइक्रोफ़ोन एक्सेस अस्वीकृत। कृपया माइक्रोफ़ोन अनुमतियां दें और पुनः प्रयास करें, या इसके बजाय ऑडियो फ़ाइल अपलोड करें।' :
+                        '🎤 Microphone access denied. Please allow microphone permissions and try again, or upload an audio file instead.', 'warning');
+                } else {
+                    showNotification(currentLanguage === 'hi' ? 
+                        'रिकॉर्डिंग शुरू नहीं हो सकी। कृपया इसके बजाय ऑडियो फ़ाइल अपलोड करने का प्रयास करें।' :
+                        'Could not start recording. Please try uploading an audio file instead.', 'danger');
+                }
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                isRecording = false;
+                
+                // Update UI
+                const recordBtn = document.getElementById('recordBtn');
+                recordBtn.innerHTML = `<i class="fas fa-microphone"></i> <span>${currentLanguage === 'hi' ? 'रिकॉर्डिंग शुरू करें' : 'Start Recording'}</span>`;
+                recordBtn.classList.remove('recording');
+                
+                // Hide visualizer
+                document.getElementById('audioVisualizer').style.display = 'none';
+                
+                showNotification(currentLanguage === 'hi' ? 
+                    'रिकॉर्डिंग बंद। आप अब इसे वापस चला सकते हैं या इसका विश्लेषण कर सकते हैं।' :
+                    'Recording stopped. You can now play it back or analyze it.', 'success');
+            }
+        }
+
+        function playRecording() {
+            const audioPlayer = document.getElementById('audioPlayer');
+            if (audioPlayer.src) {
+                audioPlayer.play();
+            }
+        }
+
+        function clearRecording() {
+            // Clear live recording
+            audioBlob = null;
+            const audioPlayer = document.getElementById('audioPlayer');
+            audioPlayer.src = '';
+            audioPlayer.style.display = 'none';
+            document.getElementById('playBtn').disabled = true;
+            document.getElementById('clearRecordingBtn').disabled = true;
+            
+            // Reset recording button
+            const recordBtn = document.getElementById('recordBtn');
+            recordBtn.innerHTML = `<i class="fas fa-microphone"></i> <span>${TRANSLATIONS[currentLanguage].recordBtnText}</span>`;
+            recordBtn.classList.remove('recording');
+            
+            // Hide visualizer
+            document.getElementById('audioVisualizer').style.display = 'none';
+            
+            showNotification(currentLanguage === 'hi' ? 
+                'रिकॉर्डिंग साफ़ की गई' : 'Recording cleared', 'info');
+        }
+
+        function clearAllAudio() {
+            clearRecording();
+            removeFile('audio');
+            showNotification(currentLanguage === 'hi' ? 
+                'सभी ऑडियो डेटा साफ़ किया गया' : 'All audio data cleared', 'info');
+        }
+
+        // Tab switching with language support
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            event.target.classList.add('active');
+            
+            clearInputs();
+        }
+
+        function clearInputs() {
+            document.getElementById('claimText').value = '';
+            removeFile('image');
+            removeFile('audio');
+            clearRecording();
+            document.getElementById('urlInput').value = '';
+            hideResults();
+        }
+
+        function fillClaim(element) {
+            const claimText = element.textContent.trim();
+            const language = element.getAttribute('data-lang') || 'en';
+            
+            switchTab('text');
+            document.querySelector('.tab-btn').click();
+            
+            document.getElementById('claimText').value = claimText;
+            document.getElementById('language').value = language;
+            changeLanguage(language);
+            
+            element.style.background = '#28a745';
+            element.style.color = 'white';
+            setTimeout(() => {
+                element.style.background = '';
+                element.style.color = '';
+            }, 1000);
+        }
+
+        // Enhanced analysis with real-time data integration
+        async function analyzeClaim() {
+            if (CONFIG.IS_PREVIEW_MODE) {
+                return showDemoAnalysis();
+            }
+        
+            const activeTab = document.querySelector('.tab-content.active').id;
+            let inputData = new FormData();
+            let inputType = '';
+            
+            // Prepare input based on active tab
+            if (activeTab === 'textTab') {
+                const text = document.getElementById('claimText').value.trim();
+                if (!text) {
+                    showNotification(currentLanguage === 'hi' ? 
+                        'कृपया विश्लेषण के लिए एक दावा दर्ज करें।' :
+                        'Please enter a claim to analyze.', 'warning');
+                    return;
+                }
+                inputData.append('claim', text);
+                inputType = 'text';
+                
+            } else if (activeTab === 'imageTab') {
+                const file = document.getElementById('imageFile').files[0];
+                if (!file) {
+                    showNotification(currentLanguage === 'hi' ? 
+                        'कृपया छवि फ़ाइल अपलोड करें।' :
+                        'Please upload an image file.', 'warning');
+                    return;
+                }
+                inputData.append('image_data', file);
+                inputType = 'image';
+                
+            } else if (activeTab === 'audioTab') {
+                // Smart audio source selection with user feedback
+                const hasLiveRecording = audioBlob !== null;
+                const hasUploadedFile = document.getElementById('audioFile').files[0] !== null;
+                
+                if (hasLiveRecording && hasUploadedFile) {
+                    // Both sources available - ask user preference or use live as default
+                    const useRecording = confirm(currentLanguage === 'hi' ? 
+                        'आपके पास लाइव रिकॉर्डिंग और अपलोड की गई फ़ाइल दोनों हैं। लाइव रिकॉर्डिंग का उपयोग करें?' :
+                        'You have both live recording and uploaded file. Use live recording?');
+                        
+                    if (useRecording) {
+                        const base64Audio = await blobToBase64(audioBlob);
+                        inputData.append('live_audio_data', base64Audio.split(',')[1]);
+                        inputType = 'live_audio';
+                    } else {
+                        const file = document.getElementById('audioFile').files[0];
+                        inputData.append('audio_data', file);
+                        inputType = 'audio_file';
+                    }
+                } else if (hasLiveRecording) {
+                    const base64Audio = await blobToBase64(audioBlob);
+                    inputData.append('live_audio_data', base64Audio.split(',')[1]);
+                    inputType = 'live_audio';
+                } else if (hasUploadedFile) {
+                    const file = document.getElementById('audioFile').files[0];
+                    inputData.append('audio_data', file);
+                    inputType = 'audio_file';
+                } else {
+                    showNotification(currentLanguage === 'hi' ? 
+                        'कृपया ऑडियो रिकॉर्ड करें या ऑडियो फ़ाइल अपलोड करें।' :
+                        'Please record audio or upload an audio file.', 'warning');
+                    return;
+                }
+        
+            } else if (activeTab === 'urlTab') {
+                const url = document.getElementById('urlInput').value.trim();
+                if (!url) {
+                    showNotification(currentLanguage === 'hi' ? 
+                        'कृपया विश्लेषण के लिए URL दर्ज करें।' :
+                        'Please enter a URL to analyze.', 'warning');
+                    return;
+                }
+                inputData.append('url', url);
+                inputType = 'url';
+            }
+            
+            inputData.append('language', currentLanguage);
+            inputData.append('include_audio', document.getElementById('includeAudio').checked);
+            inputData.append('enable_real_time_search', 'true'); // Enable real-time search
+            
+            showLoading();
+            
+            try {
+                // Enhanced API call with timeout and retry logic
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT);
+
+                const response = await fetch(CONFIG.API_BASE_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: inputData,
+                    signal: controller.signal,
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    let errorMessage = `HTTP error! status: ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error?.message || errorMessage;
+                    } catch {
+                        // If we can't parse error JSON, use status-based message
+                        if (response.status === 413) {
+                            errorMessage = currentLanguage === 'hi' ?
+                                'फ़ाइल बहुत बड़ी है' : 'File too large';
+                        } else if (response.status === 429) {
+                            errorMessage = currentLanguage === 'hi' ?
+                                'बहुत सारे अनुरोध। कृपया थोड़ी देर बाद पुनः प्रयास करें।' :
+                                'Too many requests. Please try again later.';
+                        } else if (response.status >= 500) {
+                            errorMessage = currentLanguage === 'hi' ?
+                                'सर्वर त्रुटि। कृपया बाद में पुनः प्रयास करें।' :
+                                'Server error. Please try again later.';
+                        }
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displayResults(result.data);
+                    hideLoading();
+                } else {
+                    throw new Error(result.error?.message || 'Analysis failed');
+                }
+
+            } catch (error) {
+                console.error('Analysis failed:', error);
+                hideLoading();
+
+                // Enhanced error messaging
+                let errorMessage = error.message;
+                if (error.name === 'AbortError') {
+                    errorMessage = currentLanguage === 'hi' ?
+                        'अनुरोध समय समाप्त हो गया। कृपया पुनः प्रयास करें।' :
+                        'Request timed out. Please try again.';
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMessage = currentLanguage === 'hi' ?
+                        'नेटवर्क त्रुटि। कृपया अपना इंटरनेट कनेक्शन जांचें।' :
+                        'Network error. Please check your internet connection.';
+                }
+
+                showNotification(currentLanguage === 'hi' ?
+                    `विश्लेषण असफल: ${errorMessage}` :
+                    `Analysis failed: ${errorMessage}`, 'danger');
+
+                displayError(errorMessage);
+            }
+        }
+
+        function showDemoAnalysis() {
+            const activeTab = document.querySelector('.tab-content.active').id;
+            let demoText = '';
+            
+            if (activeTab === 'textTab') {
+                demoText = document.getElementById('claimText').value.trim();
+            } else {
+                demoText = 'Sample claim for demo';
+            }
+            
+            if (!demoText) {
+                showNotification(currentLanguage === 'hi' ? 
+                    'कृपया विश्लेषण के लिए एक दावा दर्ज करें।' :
+                    'Please enter a claim to analyze.', 'warning');
+                return;
+            }
+            
+            showLoading();
+            
+            setTimeout(() => {
+                const mockResult = generateMockResult(demoText);
+                displayResults(mockResult);
+                hideLoading();
+            }, 2500);
+        }
+
+        function generateMockResult(claim) {
+            const lowerClaim = claim.toLowerCase();
+            let verdict = 'Unverified';
+            let score = 50;
+            let explanation = '';
+            let kidExplanation = '';
+            
+            if (currentLanguage === 'hi') {
+                explanation = 'इस दावे को विश्वसनीय स्रोतों से आगे सत्यापन की आवश्यकता है।';
+                kidExplanation = 'यह जानकारी पूरी तरह सच नहीं हो सकती। हमेशा विश्वसनीय बड़ों और आधिकारिक स्रोतों से जांच करें।';
+            } else {
+                explanation = 'This claim requires further verification from reliable sources.';
+                kidExplanation = 'This information might not be completely true. Always check with trusted grown-ups and official sources.';
+            }
+            
+            // Handle Asia Cup 2025 claim specifically
+            if (lowerClaim.includes('asia cup') && lowerClaim.includes('2025')) {
+                verdict = 'False';
+                score = 15;
+                if (currentLanguage === 'hi') {
+                    explanation = 'यह दावा झूठा है। सितंबर 2025 में कोई एशिया कप क्रिकेट टूर्नामेंट नहीं हुआ। एशिया कप आमतौर पर हर दो साल में आयोजित होता है और अगला टूर्नामेंट अभी तक निर्धारित नहीं है। यह भविष्य की घटना के बारे में गलत जानकारी है।';
+                    kidExplanation = 'यह खेल की खबर सच नहीं है। अभी तक यह टूर्नामेंट नहीं हुआ है।';
+                } else {
+                    explanation = 'This claim is false. There was no Asia Cup cricket tournament held in September 2025. The Asia Cup is typically held every two years, and the next tournament has not been scheduled yet. This is misinformation about a future event.';
+                    kidExplanation = 'This sports news is not true. This tournament has not happened yet.';
+                }
+            }
+            // Handle other demo claims
+            else if (lowerClaim.includes('miracle cure') || lowerClaim.includes('doctors don\'t want') || 
+                lowerClaim.includes('गाय का मूत्र') || lowerClaim.includes('cow urine')) {
+                verdict = 'False';
+                score = 85;
+                if (currentLanguage === 'hi') {
+                    explanation = 'यह चिकित्सा दुष्प्रचार प्रतीत होता है। इन दावों का समर्थन करने के लिए कोई वैज्ञानिक प्रमाण नहीं है। चिकित्सा सलाह के लिए हमेशा स्वास्थ्य पेशेवरों से सलाह लें।';
+                    kidExplanation = 'यह स्वास्थ्य की जानकारी सच नहीं है। बीमार होने पर हमेशा डॉक्टर से मिलें।';
+                } else {
+                    explanation = 'This appears to be medical misinformation. No scientific evidence supports these claims. Always consult healthcare professionals for medical advice.';
+                    kidExplanation = 'This health information is not true. Always see a doctor when sick.';
+                }
+            }
+
+            return {
+                verdict: verdict,
+                score: score,
+                explanation: explanation,
+                explainLikeAKid: kidExplanation,
+                categories: {
+                    source_trust: {
+                        label: currentLanguage === 'hi' ? 'सत्यापन आवश्यक' : 'Needs Verification',
+                        confidence: score,
+                        short: currentLanguage === 'hi' ? 'स्रोतों को सत्यापन की आवश्यकता' : 'Sources require verification',
+                        action: currentLanguage === 'hi' ? 'आधिकारिक स्रोतों की जांच करें' : 'Check official sources'
+                    }
+                },
+                sources: ['https://www.pib.gov.in/', 'https://factchecker.in/'],
+                verification_steps: currentLanguage === 'hi' ? [
+                    'आधिकारिक सरकारी वेबसाइटों की जांच करें',
+                    'मुख्यधारा की समाचार कवरेज देखें',
+                    'तथ्य-जांच वेबसाइटों के साथ सत्यापित करें',
+                    'कई स्रोतों से जांच करें'
+                ] : [
+                    'Check official government websites',
+                    'Look for coverage in mainstream news',
+                    'Verify with fact-checking websites',
+                    'Cross-reference multiple sources'
+                ],
+                educational_tips: currentLanguage === 'hi' ? [
+                    'साझा करने से पहले हमेशा सत्यापित करें',
+                    'स्रोत की विश्वसनीयता जांचें',
+                    'आधिकारिक पुष्टि देखें',
+                    'सनसनीखेज दावों पर संदेह करें'
+                ] : [
+                    'Always verify before sharing',
+                    'Check the source credibility',
+                    'Look for official confirmations',
+                    'Be skeptical of sensational claims'
+                ],
+                processing_time: 2.1,
+                language: currentLanguage,
+                claim_id: 'demo_' + Date.now(),
+                input_type: 'text',
+                real_time_check: currentLanguage === 'hi' ? 
+                    'वास्तविक समय डेटा के साथ जांच की गई' :
+                    'Checked with real-time data'
+            };
+        }
+
+        // Enhanced result display with language support
+        function displayResults(data) {
+            hideLoading();
+            
+            document.getElementById('emptyState').style.display = 'none';
+            const resultsContent = document.getElementById('resultsContent');
+            resultsContent.classList.add('show');
+            
+            // Clear previous results
+            resultsContent.innerHTML = '';
+            
+            // Create verdict card
+            const verdictCard = createVerdictCard(data);
+            resultsContent.appendChild(verdictCard);
+            
+            // Create explanation cards
+            const explanationCard = createExplanationCard(data);
+            resultsContent.appendChild(explanationCard);
+            
+            // Show audio explanation if available
+            if (data.audio_content) {
+                const audioCard = createAudioCard(data.audio_content);
+                resultsContent.appendChild(audioCard);
+            }
+            
+            // Show real-time check indicator
+            if (data.real_time_check) {
+                const realTimeCard = createRealTimeCard(data.real_time_check);
+                resultsContent.appendChild(realTimeCard);
+            }
+            
+            // Show categories, sources, steps, etc.
+            if (data.categories && Object.keys(data.categories).length > 0) {
+                const categoriesCard = createCategoriesCard(data.categories);
+                resultsContent.appendChild(categoriesCard);
+            }
+            
+            if (data.sources && data.sources.length > 0) {
+                const sourcesCard = createSourcesCard(data.sources);
+                resultsContent.appendChild(sourcesCard);
+            }
+            
+            if (data.verification_steps && data.verification_steps.length > 0) {
+                const stepsCard = createVerificationStepsCard(data.verification_steps);
+                resultsContent.appendChild(stepsCard);
+            }
+            
+            if (data.educational_tips && data.educational_tips.length > 0) {
+                const tipsCard = createEducationalTipsCard(data.educational_tips);
+                resultsContent.appendChild(tipsCard);
+            }
+            
+            // Metadata
+            const metadataCard = createMetadataCard(data);
+            resultsContent.appendChild(metadataCard);
+        }
+
+        function createVerdictCard(data) {
+            const card = document.createElement('div');
+            card.className = 'verdict-card';
+            
+            const verdictClass = data.verdict.toLowerCase().replace(/\s+/g, '');
+            const verdictIcon = {
+                'true': '✅',
+                'false': '❌',
+                'partiallytrue': '⚠️',
+                'unverified': '❓',
+                'error': '⚠️'
+            }[verdictClass] || '❓';
+            
+            const confidence = data.score || 0;
+            
+            card.innerHTML = `
+                <div class="verdict-header">
+                    <div class="verdict-icon">${verdictIcon}</div>
+                    <div>
+                        <div class="verdict-text verdict-${verdictClass}">${data.verdict}</div>
+                        <div style="font-size: 1rem; color: #666; margin-top: 5px;">
+                            ${currentLanguage === 'hi' ? 'विश्वास' : 'Confidence'}: ${confidence}%
+                        </div>
+                    </div>
+                </div>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" style="width: ${confidence}%;"></div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function createExplanationCard(data) {
+            const card = document.createElement('div');
+            card.innerHTML = `
+                <div class="explanation-card">
+                    <h4><i class="fas fa-info-circle"></i> ${currentLanguage === 'hi' ? 'विस्तृत विश्लेषण' : 'Detailed Analysis'}</h4>
+                    <p>${data.explanation || (currentLanguage === 'hi' ? 'विश्लेषण उपलब्ध नहीं है' : 'No explanation available')}</p>
+                </div>
+                <div class="kid-explanation">
+                    <div style="font-weight: bold; color: #1976d2; font-size: 1.1rem; margin-bottom: 10px;">
+                        ${currentLanguage === 'hi' ? '🧒 बच्चों के लिए: ' : '👶 For Kids: '}
+                    </div>
+                    <p>${data.explainLikeAKid || (currentLanguage === 'hi' ? 'बच्चों के लिए स्पष्टीकरण उपलब्ध नहीं है' : 'No kid-friendly explanation available')}</p>
+                </div>
+            `;
+            return card;
+        }
+
+        function createAudioCard(audioContent) {
+            const card = document.createElement('div');
+            card.innerHTML = `
+                <div style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #e1e5e9;">
+                    <h4><i class="fas fa-volume-up"></i> ${currentLanguage === 'hi' ? 'ऑडियो स्पष्टीकरण' : 'Audio Explanation'}</h4>
+                    <audio controls style="width: 100%; margin-top: 10px;">
+                        <source src="data:audio/mp3;base64,${audioContent}" type="audio/mp3">
+                        ${currentLanguage === 'hi' ? 'आपका ब्राउज़र ऑडियो तत्व का समर्थन नहीं करता।' : 'Your browser does not support the audio element.'}
+                    </audio>
+                </div>
+            `;
+            return card;
+        }
+
+        function createRealTimeCard(realTimeInfo) {
+            const card = document.createElement('div');
+            card.innerHTML = `
+                <div class="real-time-info">
+                    <h4><i class="fas fa-satellite-dish"></i> ${currentLanguage === 'hi' ? 'वास्तविक समय जांच' : 'Real-Time Check'}</h4>
+                    <p>${realTimeInfo}</p>
+                </div>
+            `;
+            return card;
+        }
+
+        function createCategoriesCard(categories) {
+            const card = document.createElement('div');
+            card.innerHTML = `
+                <div style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #e1e5e9;">
+                    <h4><i class="fas fa-th-large"></i> ${currentLanguage === 'hi' ? 'विस्तृत श्रेणी विश्लेषण' : 'Detailed Category Analysis'}</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+                        ${Object.entries(categories).map(([key, category]) => `
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid #e1e5e9; text-align: center;">
+                                <div style="font-size: 2rem; margin-bottom: 10px; color: #667eea;">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <h5>${category.label}</h5>
+                                <div style="margin: 10px 0;">
+                                    <div style="background: #e1e5e9; height: 6px; border-radius: 3px; overflow: hidden;">
+                                        <div style="width: ${category.confidence}%; height: 100%; background: #667eea;"></div>
+                                    </div>
+                                    <small>${category.confidence}% ${currentLanguage === 'hi' ? 'विश्वास' : 'confidence'}</small>
+                                </div>
+                                <p style="font-size: 0.9rem; color: #666;">${category.short}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function createSourcesCard(sources) {
+            const card = document.createElement('div');
+            card.innerHTML = `
+                <div style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #e1e5e9;">
+                    <h4><i class="fas fa-external-link-alt"></i> ${currentLanguage === 'hi' ? 'सत्यापन स्रोत' : 'Verification Sources'}</h4>
+                    <div style="margin-top: 15px;">
+                        ${sources.map(source => `
+                            <div style="margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                                <a href="${source}" target="_blank" rel="noopener noreferrer" style="color: #667eea; text-decoration: none;">
+                                    <i class="fas fa-external-link-alt"></i> ${source}
+                                </a>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function createVerificationStepsCard(steps) {
+            const card = document.createElement('div');
+            card.innerHTML = `
+                <div style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #e1e5e9;">
+                    <h4><i class="fas fa-list-check"></i> ${currentLanguage === 'hi' ? 'स्वयं सत्यापन कैसे करें' : 'How to Verify This Yourself'}</h4>
+                    <ol style="padding-left: 20px; margin-top: 15px;">
+                        ${steps.map(step => `<li style="margin-bottom: 8px;">${step}</li>`).join('')}
+                    </ol>
+                </div>
+            `;
+            return card;
+        }
+
+        function createEducationalTipsCard(tips) {
+            const card = document.createElement('div');
+            card.innerHTML = `
+                <div style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #e1e5e9;">
+                    <h4><i class="fas fa-lightbulb"></i> ${currentLanguage === 'hi' ? 'डिजिटल साक्षरता युक्तियां' : 'Digital Literacy Tips'}</h4>
+                    <ul style="padding-left: 20px; margin-top: 15px;">
+                        ${tips.map(tip => `<li style="margin-bottom: 8px;">${tip}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            return card;
+        }
+
+        function createMetadataCard(data) {
+            const card = document.createElement('div');
+            card.innerHTML = `
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 20px;">
+                    <h5><i class="fas fa-info"></i> ${currentLanguage === 'hi' ? 'विश्लेषण विवरण' : 'Analysis Details'}</h5>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px;">
+                        <div><strong>${currentLanguage === 'hi' ? 'प्रसंस्करण समय' : 'Processing Time'}:</strong> ${data.processing_time || 0}s</div>
+                        <div><strong>${currentLanguage === 'hi' ? 'भाषा' : 'Language'}:</strong> ${(data.language || 'Unknown').toUpperCase()}</div>
+                        <div><strong>${currentLanguage === 'hi' ? 'इनपुट प्रकार' : 'Input Type'}:</strong> ${data.input_type || 'Unknown'}</div>
+                        <div><strong>${currentLanguage === 'hi' ? 'दावा ID' : 'Claim ID'}:</strong> ${data.claim_id || 'Unknown'}</div>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function displayError(errorMessage) {
+            document.getElementById('emptyState').style.display = 'none';
+            const resultsContent = document.getElementById('resultsContent');
+            resultsContent.classList.add('show');
+            
+            resultsContent.innerHTML = `
+                <div class="verdict-card">
+                    <div class="verdict-header">
+                        <div class="verdict-icon">⚠️</div>
+                        <div>
+                            <div class="verdict-text verdict-false">${currentLanguage === 'hi' ? 'विश्लेषण त्रुटि' : 'Analysis Error'}</div>
+                            <div style="font-size: 1rem; color: #666; margin-top: 5px;">
+                                ${currentLanguage === 'hi' ? 'विश्वास' : 'Confidence'}: 0%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="explanation-card">
+                    <h4><i class="fas fa-exclamation-triangle"></i> ${currentLanguage === 'hi' ? 'त्रुटि विवरण' : 'Error Details'}</h4>
+                    <p>${currentLanguage === 'hi' ? `विश्लेषण असफल: ${errorMessage}` : `Analysis failed: ${errorMessage}`}</p>
+                </div>
+                <div class="kid-explanation">
+                    <div style="font-weight: bold; color: #1976d2; font-size: 1.1rem; margin-bottom: 10px;">
+                        ${currentLanguage === 'hi' ? '🧒 बच्चों के लिए: ' : '👶 For Kids: '}
+                    </div>
+                    <p>${currentLanguage === 'hi' ? 'इस जानकारी को जांचते समय कुछ गलत हुआ। कृपया पुनः प्रयास करें।' : 'Something went wrong while checking this information. Please try again.'}</p>
+                </div>
+            `;
+        }
+
+        // Loading and utility functions
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('analyzeBtn').disabled = true;
+            
+            // Update loading text based on language
+            document.getElementById('loadingTitle').textContent = 
+                currentLanguage === 'hi' ? 'AI के साथ विश्लेषण...' : 'Analyzing with AI...';
+            document.getElementById('loadingText').textContent = 
+                currentLanguage === 'hi' ? 'आपकी सामग्री को संसाधित कर रहे हैं...' : 'Processing your content...';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                
+                document.getElementById('progressBar').style.width = `${progress}%`;
+                
+                if (progress < 30) {
+                    document.getElementById('progressText').textContent = 
+                        currentLanguage === 'hi' ? 'इनपुट संसाधित कर रहे हैं...' : 'Processing input...';
+                } else if (progress < 60) {
+                    document.getElementById('progressText').textContent = 
+                        currentLanguage === 'hi' ? 'AI के साथ विश्लेषण...' : 'Analyzing with AI...';
+                } else {
+                    document.getElementById('progressText').textContent = 
+                        currentLanguage === 'hi' ? 'परिणाम तैयार कर रहे हैं...' : 'Generating results...';
+                }
+            }, 500);
+            
+            window.loadingInterval = interval;
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            document.getElementById('analyzeBtn').disabled = false;
+            
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('progressText').textContent = 
+                currentLanguage === 'hi' ? 'प्रारंभ कर रहे हैं...' : 'Initializing...';
+            
+            if (window.loadingInterval) {
+                clearInterval(window.loadingInterval);
+                window.loadingInterval = null;
+            }
+        }
+
+        function hideResults() {
+            document.getElementById('emptyState').style.display = 'block';
+            document.getElementById('resultsContent').classList.remove('show');
+        }
+
+        // File conversion utilities
+        function blobToBase64(blob) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial language
+            updateUILanguage();
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    analyzeClaim();
+                }
+                
+                if (e.key === 'Escape') {
+                    clearInputs();
+                }
+            });
+            
+            // Show welcome message
+            if (CONFIG.IS_PREVIEW_MODE) {
+                showNotification(currentLanguage === 'hi' ? 
+                    '🎭 पूर्वावलोकन मोड: यह डेमो संस्करण है। लाइव ऑडियो रिकॉर्डिंग और API कनेक्शन सहित पूर्ण कार्यक्षमता के लिए डाउनलोड और तैनात करें।' :
+                    '🎭 Preview Mode: This is a demo version. Download and deploy for full functionality including live audio recording and API connections.', 'info');
+            } else {
+                showNotification(currentLanguage === 'hi' ? 
+                    '🚀 SatyaCheck AI तैयार है! ऊपर किसी दावे का विश्लेषण करने का प्रयास करें या डेमो उदाहरण का उपयोग करें।' :
+                    '🚀 SatyaCheck AI is ready! Try analyzing a claim above or use the demo examples.', 'info');
+            }
+        });
+
+        // Responsive design
+        window.addEventListener('resize', function() {
+            if (window.innerWidth <= 768) {
+                document.body.style.padding = '10px';
+            } else {
+                document.body.style.padding = '20px';
+            }
+        });
+    </script>
+</body>
+</html>
