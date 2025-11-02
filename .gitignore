@@ -1,0 +1,136 @@
+# SatyaCheck AI - Git Ignore File
+
+# ============================
+# SECURITY - API Keys and Secrets
+# ============================
+.env
+.env.*
+.env.yaml
+.env.yml
+*.key
+*.pem
+secrets.json
+credentials.json
+service-account*.json
+
+# ============================
+# Python
+# ============================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ============================
+# Virtual Environments
+# ============================
+venv/
+ENV/
+env/
+.venv
+env.bak/
+venv.bak/
+
+# ============================
+# IDEs and Editors
+# ============================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ============================
+# Testing
+# ============================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+*.cover
+.cache
+nosetests.xml
+coverage.xml
+*.log
+
+# ============================
+# Google Cloud
+# ============================
+.gcloudignore
+.google-cloud/
+gcp-key*.json
+
+# ============================
+# Data and Temporary Files
+# ============================
+*.csv
+*.xls
+*.xlsx
+*.db
+*.sqlite
+*.sqlite3
+temp/
+tmp/
+*.tmp
+.cache/
+
+# ============================
+# Media Files (large uploads)
+# ============================
+uploads/
+*.mp4
+*.avi
+*.mov
+*.mp3
+*.wav
+test_videos/
+test_audio/
+test_images/
+
+# ============================
+# Documentation Build
+# ============================
+docs/_build/
+site/
+
+# ============================
+# OS Files
+# ============================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ============================
+# Project Specific
+# ============================
+# Keep test fixtures but ignore large test data
+tests/fixtures/large/
+tests/fixtures/downloads/

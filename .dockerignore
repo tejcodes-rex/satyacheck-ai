@@ -1,0 +1,65 @@
+# SatyaCheck AI - Docker Ignore File
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+docs/
+
+# Tests
+tests/
+*.test.py
+test_*.py
+
+# Environment files
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+
+# Temporary files
+*.tmp
+*.log
+*.cache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Deployment files (not needed in container)
+deploy.sh
+.gcloudignore
+
+# Large test files
+test_videos/
+test_audio/
+test_images/
+
+# Node modules (if any)
+node_modules/

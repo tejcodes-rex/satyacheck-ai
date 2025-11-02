@@ -1,0 +1,75 @@
+# SatyaCheck AI - Cloud Build Configuration
+# Automated CI/CD pipeline for Cloud Run deployment
+
+steps:
+  # Step 1: Build the API container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'Dockerfile'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/satyacheck-ai:$BUILD_ID'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/satyacheck-ai:latest'
+      - '.'
+    id: 'build-api-image'
+
+  # Step 2: Push the API container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/satyacheck-ai:$BUILD_ID'
+    id: 'push-api-image'
+    waitFor: ['build-api-image']
+
+  # Step 3: Deploy API to Cloud Run (QUOTA COMPLIANT)
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'satyacheck-ai'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/satyacheck-ai:$BUILD_ID'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      # Resource allocation (quota compliant)
+      - '--memory'
+      - '2Gi'
+      - '--cpu'
+      - '2'
+      # Auto-scaling configuration (quota compliant)
+      - '--min-instances'
+      - '0'
+      - '--max-instances'
+      - '10'
+      - '--concurrency'
+      - '80'
+      # Request handling
+      - '--timeout'
+      - '300'
+      # Environment variables
+      - '--set-env-vars'
+      - 'GOOGLE_CLOUD_PROJECT=$PROJECT_ID,ENVIRONMENT=production'
+      # Execution environment (gen2 for better performance)
+      - '--execution-environment'
+      - 'gen2'
+    id: 'deploy-api'
+    waitFor: ['push-api-image']
+
+# Store images in Container Registry
+images:
+  - 'gcr.io/$PROJECT_ID/satyacheck-ai:$BUILD_ID'
+  - 'gcr.io/$PROJECT_ID/satyacheck-ai:latest'
+
+# Build options (optimized for free tier)
+options:
+  machineType: 'E2_HIGHCPU_8'  # More cost-effective than N1
+  logging: CLOUD_LOGGING_ONLY
+
+# Timeout for entire build
+timeout: '1800s'
