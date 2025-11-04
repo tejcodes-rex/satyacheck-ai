@@ -10,7 +10,7 @@ This project is submitted for the **Google Gen AI Exchange Hackathon** by **Team
 
 ## Live Demo
 
-- **Web Application:** https://satyacheck-ai-290073510140.us-central1.run.app/
+- **Web Application:** https://storage.googleapis.com/satyacheck-frontend/index.html
 - **Backend API:** https://satyacheck-ai-290073510140.us-central1.run.app/
 - **Deepfake Detection:** 100% accuracy on test files (verified)
 
