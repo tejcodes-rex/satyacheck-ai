@@ -1,0 +1,106 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# Secrets (NEVER commit these!)
+*secret*
+*credentials*
+*.pem
+*.key
+service-account*.json
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Test outputs
+test_results/
+coverage/
+.pytest_cache/
+
+# Model checkpoints (too large)
+*.pt
+*.pth
+*.ckpt
+models/checkpoints/
+
+# Data files (too large)
+*.mp4
+*.avi
+*.mov
+*.wav
+*.mp3
+!test-files/*.mp4
+!test-files/*.mp3
+
+# Compiled files
+*.pyc
+
+# Cloud
+.gcloudignore
+
+# Node modules (if any)
+node_modules/
+
+# Cache
+.cache/
+*.cache
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# API Keys and Tokens
+*api_key*
+*token*
+.env*
+
+# Google Cloud
+gcloud-config/
+service-account.json

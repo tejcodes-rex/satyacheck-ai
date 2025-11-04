@@ -1,0 +1,168 @@
+{
+  "timestamp": "2025-11-05 02:15:58",
+  "backend_url": "https://satyacheck-ai-290073510140.us-central1.run.app/",
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0,
+    "accuracy": 100.0
+  },
+  "results": [
+    {
+      "success": true,
+      "file": "deepfake-image-fake.jpg",
+      "type": "image",
+      "expected": true,
+      "detected": true,
+      "test_passed": true,
+      "confidence": 0,
+      "risk_score": 0,
+      "time": 2.0445897579193115,
+      "response": {
+        "data": {
+          "claim_id": "req_1762289143408_e5c020e3",
+          "is_deepfake": true,
+          "media_type": "image",
+          "message": "Image deepfake analysis complete.",
+          "mode": "deep_analysis",
+          "processing_time": 1.43,
+          "result": "Deepfake",
+          "success": true
+        },
+        "message": "Analysis completed successfully.",
+        "success": true,
+        "timestamp": "2025-11-04T20:45:43.408805Z"
+      }
+    },
+    {
+      "success": true,
+      "file": "deepfake-image-real.jpg",
+      "type": "image",
+      "expected": false,
+      "detected": false,
+      "test_passed": true,
+      "confidence": 0,
+      "risk_score": 0,
+      "time": 0.5529541969299316,
+      "response": {
+        "data": {
+          "claim_id": "req_1762289019073_a265ee01",
+          "is_deepfake": false,
+          "media_type": "image",
+          "message": "Image deepfake analysis complete.",
+          "mode": "deep_analysis",
+          "processing_time": 0.29,
+          "result": "Not Deepfake",
+          "success": true
+        },
+        "message": "Analysis completed successfully.",
+        "success": true,
+        "timestamp": "2025-11-04T20:43:39.074085Z"
+      }
+    },
+    {
+      "success": true,
+      "file": "deepfake-audio-fake.mp3",
+      "type": "audio",
+      "expected": true,
+      "detected": true,
+      "test_passed": true,
+      "confidence": 0,
+      "risk_score": 0,
+      "time": 1.4503934383392334,
+      "response": {
+        "data": {
+          "claim_id": "req_1762289027766_ee231510",
+          "is_deepfake": true,
+          "media_type": "audio",
+          "message": "Audio deepfake analysis complete.",
+          "mode": "deep_analysis",
+          "processing_time": 6.21,
+          "result": "Deepfake",
+          "success": true
+        },
+        "message": "Analysis completed successfully.",
+        "success": true,
+        "timestamp": "2025-11-04T20:43:47.766380Z"
+      }
+    },
+    {
+      "success": true,
+      "file": "deepfake-audio-real.mp3",
+      "type": "audio",
+      "expected": false,
+      "detected": false,
+      "test_passed": true,
+      "confidence": 0,
+      "risk_score": 0,
+      "time": 1.3855702877044678,
+      "response": {
+        "data": {
+          "claim_id": "req_1762289032065_779f09ce",
+          "is_deepfake": false,
+          "media_type": "audio",
+          "message": "Audio deepfake analysis complete.",
+          "mode": "deep_analysis",
+          "processing_time": 1.86,
+          "result": "Not Deepfake",
+          "success": true
+        },
+        "message": "Analysis completed successfully.",
+        "success": true,
+        "timestamp": "2025-11-04T20:43:52.065274Z"
+      }
+    },
+    {
+      "success": true,
+      "file": "deepfake-video-fake.mp4",
+      "type": "video",
+      "expected": true,
+      "detected": true,
+      "test_passed": true,
+      "confidence": 0,
+      "risk_score": 0,
+      "time": 2.4038593769073486,
+      "response": {
+        "data": {
+          "claim_id": "req_1762289046700_20261e6d",
+          "is_deepfake": true,
+          "media_type": "video",
+          "message": "Video deepfake analysis complete.",
+          "mode": "deep_analysis",
+          "processing_time": 11.36,
+          "result": "Deepfake",
+          "success": true
+        },
+        "message": "Analysis completed successfully.",
+        "success": true,
+        "timestamp": "2025-11-04T20:44:06.700607Z"
+      }
+    },
+    {
+      "success": true,
+      "file": "deepfake-video-real.mp4",
+      "type": "video",
+      "expected": false,
+      "detected": false,
+      "test_passed": true,
+      "confidence": 0,
+      "risk_score": 0,
+      "time": 3.847290277481079,
+      "response": {
+        "data": {
+          "claim_id": "req_1762288838491_ba138f84",
+          "is_deepfake": false,
+          "media_type": "video",
+          "message": "Video deepfake analysis complete.",
+          "mode": "deep_analysis",
+          "processing_time": 41.6,
+          "result": "Not Deepfake",
+          "success": true
+        },
+        "message": "Analysis completed successfully.",
+        "success": true,
+        "timestamp": "2025-11-04T20:40:38.492063Z"
+      }
+    }
+  ]
+}
